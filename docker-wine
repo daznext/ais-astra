@@ -1,0 +1,102 @@
+#!/bin/bash
+
+# Run docker with just X11 support
+docker_run () {
+    docker run -it \
+    --rm \
+    --env="DISPLAY" \
+    --volume="${XAUTHORITY}:/root/.Xauthority:ro" \
+    --volume="/tmp/.X11-unix:/tmp/.X11-unix:ro" \
+    --volume="/etc/localtime:/etc/localtime:ro" \
+    --volume="aishome:/home/wineuser" \
+    --hostname="winecellar" \
+    --name="wine" \
+    $DOCKER_IMAGE "$@"
+}
+
+
+# Run docker with X11 and audio support
+docker_run_with_audio () {
+    docker run -it \
+    --rm \
+    --env="DISPLAY" \
+    --volume="${XAUTHORITY}:/root/.Xauthority:ro" \
+    --volume="/tmp/.X11-unix:/tmp/.X11-unix:ro" \
+    --volume="/tmp/pulse-socket:/tmp/pulse-socket" \
+    --volume="/etc/localtime:/etc/localtime:ro" \
+    --volume="aishome:/home/wineuser" \
+    --hostname="winecellar" \
+    --name="wine" \
+    $DOCKER_IMAGE "$@"
+}
+
+
+# Run docker on macOS with X11 over TCP socket
+docker_run_on_mac () {
+    docker run -it \
+    --rm \
+    --env="DISPLAY=host.docker.internal:0" \
+    --volume="aishome:/home/wineuser" \
+    --hostname="winecellar" \
+    --name="wine" \
+    $DOCKER_IMAGE "$@"
+}
+
+
+USE_DOCKER_IMAGE="true"
+DOCKER_IMAGE="vitacore/ais-docker:latest"
+
+case $1 in
+    --help)
+        echo "Usage: $0 [--local] [command] [arguments]..."
+        echo "e.g."
+        echo "    $0"
+        echo "    $0 wine notepad.exe"
+        echo "    $0 wineboot --init"
+        exit 0
+        ;;
+esac
+
+# Grab the latest image from docker hub or use the locally built version
+if [ $USE_DOCKER_IMAGE == "true" ]; then
+    docker pull $DOCKER_IMAGE
+else
+    DOCKER_IMAGE="docker-wine"
+fi
+
+if ! docker volume ls -qf "name=aishome" | grep -q "aishome"; then
+    echo "INFO: Creating Docker volume container 'aishome'..."
+    docker volume create aishome
+else
+    echo "INFO: Using existing Docker volume container 'aishome'..."
+fi
+
+# Check if running on a Mac
+if [ `uname` == "Darwin" ]; then
+    # Check XQuartz installed
+    if ! which xquartz >/dev/null 2>&1; then
+        echo "ERROR: XQuartz does not appear to be installed"
+        exit 1
+    fi
+
+    # Allow localhost to access XQuartz if required
+    if ! xhost | grep "INET:localhost" >/dev/null 2>&1; then
+        echo "WARNING: Adding localhost to authorized xhost clients"
+        xhost + 127.0.0.1
+    fi
+
+    docker_run_on_mac "$@"
+else
+    # $XAUTHORITY overrides default location of .Xauthority
+    if [ -z $XAUTHORITY ]; then
+        if [ -s "${HOME}/.Xauthority" ]; then
+            export XAUTHORITY="${HOME}/.Xauthority"
+        else
+            echo "ERROR: No valid .Xauthority file found for X11"
+            exit 1
+        fi
+    fi
+
+    echo "INFO: PulseAudio not installed so running without sound"
+    docker_run "$@"
+fi
