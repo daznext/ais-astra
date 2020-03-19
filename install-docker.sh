@@ -1,4 +1,5 @@
 #!/bin/bash
+# wget https://github.com/daznext/ais-astra/raw/master/install-docker.sh -O - | /bin/bash -
 
 sudo apt-get update && sudo apt-get -y upgrade
 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
