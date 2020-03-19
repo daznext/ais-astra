@@ -1,6 +1,6 @@
 #!/bin/bash
 
-xhost +
+
 # Run docker with just X11 support
 docker_run () {
     docker run -it \
@@ -93,7 +93,7 @@ else
             exit 1
         fi
     fi
-
+    xhost +
     echo "INFO: Start docker wine"
     docker_run "$@"
 fi
