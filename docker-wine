@@ -64,7 +64,8 @@ docker pull $DOCKER_IMAGE
 if ! docker volume ls -qf "name=aishome" | grep -q "aishome"; then
     echo "INFO: Creating Docker volume container 'aishome'..."
     docker volume create aishome
-    docker_run "winetricks -q dotnet20"
+    docker_run winetricks -q dotnet20
+    wget https://ofoms.ru/static/ais2.tar.gz && tar xvzf ais2.tar.gz
 else
     echo "INFO: Using existing Docker volume container 'aishome'..."
 fi
