@@ -1,7 +1,7 @@
 FROM i386/ubuntu:18.04
 
-
-RUN export DEBIAN_FRONTEND="noninteractive" \
+RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections \
+    && export DEBIAN_FRONTEND="noninteractive" \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
     apt-transport-https \

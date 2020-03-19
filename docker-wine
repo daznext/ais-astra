@@ -1,5 +1,8 @@
 #!/bin/bash
 
+DOCKER_IMAGE="vitacore/ais-docker:latest"
+AIS_ARC="ais2.tar.gz"
+AIS_URL="https://ofoms.ru/static/${AIS_ARC}"
 
 # Run docker with just X11 support
 docker_run () {
@@ -45,7 +48,7 @@ docker_run_on_mac () {
 
 
 
-DOCKER_IMAGE="vitacore/ais-docker:latest"
+
 
 case $1 in
     --help)
@@ -65,7 +68,8 @@ if ! docker volume ls -qf "name=aishome" | grep -q "aishome"; then
     echo "INFO: Creating Docker volume container 'aishome'..."
     docker volume create aishome
     docker_run winetricks -q dotnet20
-    docker_run wget https://ofoms.ru/static/ais2.tar.gz && tar xvzf ais2.tar.gz
+    docker_run wget $AIS_URL
+    docker_dun tar xvzf $AIS_ARC
 else
     echo "INFO: Using existing Docker volume container 'aishome'..."
 fi
