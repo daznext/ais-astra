@@ -1,3 +1,3 @@
 #!/bin/bash
 xhost +
-./docker-wine winetricks dotnet20
+./docker-wine winetricks -q dotnet20
