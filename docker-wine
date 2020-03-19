@@ -1,5 +1,6 @@
 #!/bin/bash
 
+xhost +
 # Run docker with just X11 support
 docker_run () {
     docker run -it \
@@ -43,7 +44,7 @@ docker_run_on_mac () {
 }
 
 
-USE_DOCKER_IMAGE="true"
+
 DOCKER_IMAGE="vitacore/ais-docker:latest"
 
 case $1 in
@@ -57,12 +58,8 @@ case $1 in
         ;;
 esac
 
-# Grab the latest image from docker hub or use the locally built version
-if [ $USE_DOCKER_IMAGE == "true" ]; then
-    docker pull $DOCKER_IMAGE
-else
-    DOCKER_IMAGE="docker-wine"
-fi
+
+docker pull $DOCKER_IMAGE
 
 if ! docker volume ls -qf "name=aishome" | grep -q "aishome"; then
     echo "INFO: Creating Docker volume container 'aishome'..."
@@ -97,6 +94,6 @@ else
         fi
     fi
 
-    echo "INFO: PulseAudio not installed so running without sound"
+    echo "INFO: Start docker wine"
     docker_run "$@"
 fi
