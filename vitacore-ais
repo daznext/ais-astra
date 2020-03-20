@@ -140,7 +140,7 @@ else
     if [ -z "$1" ]; then
         echo "Запуск АИС ЛПУ"
         if xhost >& /dev/null ; then 
-            docker_run wine $AIS_EXE && exit
+            docker_run wine $AIS_EXE ; exit
         else 
             echo "Это надо делать из X сессии"
             exit 1
