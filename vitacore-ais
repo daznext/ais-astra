@@ -95,11 +95,17 @@ docker pull $DOCKER_IMAGE
 
 if ! docker volume ls -qf "name=aishome" | grep -q "aishome"; then
     echo "INFO: Первый запуск, устанавливаем все..."
-    docker volume create aishome
-    docker_run winetricks -q dotnet20
-    docker_run wget $AIS_URL
-    docker_run tar xvzf $AIS_ARC
-    echo "Все поставили"
+    if xhost >& /dev/null ; then 
+        docker volume create aishome
+        docker_run winetricks -q dotnet20
+        docker_run wget $AIS_URL
+        docker_run tar xvzf $AIS_ARC
+        echo "Все поставили"
+    else 
+        echo "Это надо делать из X сессии"
+        exit 1
+    fi  
+
 else
     echo "INFO: Using existing Docker volume container 'aishome'..."
 fi
