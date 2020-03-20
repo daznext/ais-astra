@@ -3,7 +3,9 @@
 DOCKER_IMAGE="vitacore/ais-docker:latest"
 AIS_ARC="ais2.tar.gz"
 AIS_URL="https://ofoms.ru/static/${AIS_ARC}"
+AIS_EXE="./ais2/AKUZ.UserArm.exe"
 
+USER_M=$USER
 
 install_docker_astra() {
     sudo apt-get update && sudo apt-get -y upgrade && \
@@ -12,7 +14,7 @@ install_docker_astra() {
     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable" && \
     sudo apt-get update && sudo apt-get -y upgrade && \
     sudo apt-get install -y docker-ce docker-ce-cli containerd.io && \
-    sudo usermod -aG docker $USER
+    sudo usermod -aG docker $USER_M
     echo "Докер установлен, необходимо перезагрузить систему (или выйти и зайти)"
     exit 0
 }
@@ -96,7 +98,8 @@ if ! docker volume ls -qf "name=aishome" | grep -q "aishome"; then
     docker volume create aishome
     docker_run winetricks -q dotnet20
     docker_run wget $AIS_URL
-    docker_dun tar xvzf $AIS_ARC
+    docker_run tar xvzf $AIS_ARC
+    echo "Все поставили"
 else
     echo "INFO: Using existing Docker volume container 'aishome'..."
 fi
@@ -128,5 +131,14 @@ else
     fi
     xhost +
     echo "INFO: Start docker wine"
+    if [ -z "$1" ]; then
+        echo "Запуск АИС ЛПУ"
+        if xhost >& /dev/null ; then 
+            docker_run wine $AIS_EXE
+        else 
+            echo "Это надо делать из X сессии"
+            exit 1
+        fi       
+    fi
     docker_run "$@"
 fi
