@@ -1,9 +1,9 @@
 #!/bin/bash
 
 DOCKER_IMAGE="vitacore/ais-docker:latest"
-AIS_ARC="ais2.tar.gz"
-AIS_URL="https://ofoms.ru/static/${AIS_ARC}"
-AIS_EXE="./ais2/AKUZ.UserArm.exe"
+AIS_ARC="ais.tar.bz2"
+AIS_URL="https://github.com/daznext/ais-astra/raw/master/Binary/ais.tar.bz2"
+AIS_EXE="./ais/Update/AKUZ.UpdateUtility.exe"
 
 USER_M=$USER
 
@@ -40,7 +40,12 @@ check_docker () {
     fi
 }
 
-check_docker
+if [ `uname` == "Darwin" ]; then
+   echo "Mac, skip check docker"
+else
+   check_docker
+fi
+
 
 # Run docker with just X11 support
 docker_run () {
@@ -52,7 +57,7 @@ docker_run () {
     --volume="/etc/localtime:/etc/localtime:ro" \
     --volume="aishome:/home/wineuser" \
     --hostname="winecellar" \
-    --name="wine" \
+    --name="wineais" \
     $DOCKER_IMAGE "$@"
 }
 
@@ -63,7 +68,7 @@ docker_run_on_mac () {
     --env="DISPLAY=host.docker.internal:0" \
     --volume="aishome:/home/wineuser" \
     --hostname="winecellar" \
-    --name="wine" \
+    --name="wineais" \
     $DOCKER_IMAGE "$@"
 }
 
@@ -97,21 +102,28 @@ if ! docker volume ls -qf "name=aishome" | grep -q "aishome"; then
     echo "INFO: Первый запуск, устанавливаем все..."
     if xhost >& /dev/null ; then 
         docker volume create aishome
-        docker_run winetricks -q dotnet20
-        docker_run wget $AIS_URL
-        docker_run tar xvzf $AIS_ARC
+        if [ `uname` == "Darwin" ]; then
+            docker_run_on_mac winetricks -q dotnet20sp2
+            docker_run_on_mac wget $AIS_URL 
+            docker_run_on_mac tar xvjf $AIS_ARC
+        else
+            docker_run winetricks -q dotnet20sp2
+            docker_run wget $AIS_URL 
+            docker_run tar xvjf $AIS_ARC
+        fi
+       
         echo "Все поставили"
     else 
         echo "Это надо делать из X сессии"
         exit 1
     fi  
-
 else
     echo "INFO: Using existing Docker volume container 'aishome'..."
 fi
 
 # Check if running on a Mac
 if [ `uname` == "Darwin" ]; then
+    echo "mac"
     # Check XQuartz installed
     if ! which xquartz >/dev/null 2>&1; then
         echo "ERROR: XQuartz does not appear to be installed"
@@ -124,7 +136,17 @@ if [ `uname` == "Darwin" ]; then
         xhost + 127.0.0.1
     fi
 
+    if [ -z "$1" ]; then
+        echo "Запуск АИС ЛПУ"
+        if xhost >& /dev/null ; then 
+            docker_run_on_mac wine $AIS_EXE ; exit
+        else 
+            echo "Это надо делать из X сессии"
+            exit 1
+        fi       
+    fi
     docker_run_on_mac "$@"
+    exit 0
 else
     # $XAUTHORITY overrides default location of .Xauthority
     if [ -z $XAUTHORITY ]; then
