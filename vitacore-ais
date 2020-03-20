@@ -4,6 +4,42 @@ DOCKER_IMAGE="vitacore/ais-docker:latest"
 AIS_ARC="ais2.tar.gz"
 AIS_URL="https://ofoms.ru/static/${AIS_ARC}"
 
+
+install_docker_astra() {
+    sudo apt-get update && sudo apt-get -y upgrade && \
+    sudo apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common sudo && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add - && \
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable" && \
+    sudo apt-get update && sudo apt-get -y upgrade && \
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io && \
+    sudo usermod -aG docker $USER
+    echo "Докер установлен, необходимо перезагрузить систему (или выйти и зайти)"
+    exit 0
+}
+
+check_docker () {
+    if ! which docker >/dev/null 2>&1; then
+        read -p "Докер не установлен, ставим? (y/n)? :" choice
+        case "$choice" in 
+            y|Y ) 
+                echo "Ставим докер"
+                install_docker_astra
+                ;;
+            * ) 
+                echo "выход"
+                exit 0
+                ;;
+        esac
+    else
+        if ! id -nG | tr ' ' '\n' | grep docker; then
+            echo "Вы не в группе docker"
+            exit 0
+        fi
+    fi
+}
+
+check_docker
+
 # Run docker with just X11 support
 docker_run () {
     docker run -it \
@@ -18,23 +54,6 @@ docker_run () {
     $DOCKER_IMAGE "$@"
 }
 
-
-# Run docker with X11 and audio support
-docker_run_with_audio () {
-    docker run -it \
-    --rm \
-    --env="DISPLAY" \
-    --volume="${XAUTHORITY}:/root/.Xauthority:ro" \
-    --volume="/tmp/.X11-unix:/tmp/.X11-unix:ro" \
-    --volume="/tmp/pulse-socket:/tmp/pulse-socket" \
-    --volume="/etc/localtime:/etc/localtime:ro" \
-    --volume="aishome:/home/wineuser" \
-    --hostname="winecellar" \
-    --name="wine" \
-    $DOCKER_IMAGE "$@"
-}
-
-
 # Run docker on macOS with X11 over TCP socket
 docker_run_on_mac () {
     docker run -it \
@@ -47,25 +66,33 @@ docker_run_on_mac () {
 }
 
 
-
-
-
 case $1 in
     --help)
-        echo "Usage: $0 [--local] [command] [arguments]..."
+        echo "Usage: $0 [command] [arguments]... | --clean"
         echo "e.g."
         echo "    $0"
         echo "    $0 wine notepad.exe"
         echo "    $0 wineboot --init"
         exit 0
         ;;
+    --clean)
+        read -p "Очистка диска АИС? (y/n)? :" choice
+        case "$choice" in 
+            y|Y ) 
+                docker volume rm aishome
+                echo "Диск АИС удален"
+                ;;
+            * ) 
+                echo "выход"
+                ;;
+        esac
+        exit 0
 esac
-
 
 docker pull $DOCKER_IMAGE
 
 if ! docker volume ls -qf "name=aishome" | grep -q "aishome"; then
-    echo "INFO: Creating Docker volume container 'aishome'..."
+    echo "INFO: Первый запуск, устанавливаем все..."
     docker volume create aishome
     docker_run winetricks -q dotnet20
     docker_run wget $AIS_URL
