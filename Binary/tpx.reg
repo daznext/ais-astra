@@ -1,40 +1,10 @@
 Windows Registry Editor Version 5.00
 
 [HKEY_CLASSES_ROOT\.tpx]
+@="TPXfile"
+"Content Type"="text/plain"
 
-[HKEY_CLASSES_ROOT\.tpx\shell]
+[HKEY_CLASSES_ROOT\TPXfile\Shell\Open\command]
+@="Z:\\home\\wineuser\\Debug\\AKUZ.UserArm.exe tpx \"%1\"" 
 
-[HKEY_CLASSES_ROOT\.tpx\shell\open]
-
-[HKEY_CLASSES_ROOT\.tpx\shell\open\command]
-@="C:\\ais\\AKUZ.UserArm.exe tpx \"%1\""
-
-[HKEY_CLASSES_ROOT\.tpx\shell\print]
-
-[HKEY_CLASSES_ROOT\.tpx\shell\print\command]
-@="C:\\ais\\AKUZ.UserArm.exe tpx /p \"%1\""
-
-[HKEY_CLASSES_ROOT\.tpx\shell\printto]
-
-[HKEY_CLASSES_ROOT\.tpx\shell\printto\command]
-@="C:\\ais\\AKUZ.UserArm.exe tpx /p \"%1\" \"%2\""
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.tpx]
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.tpx\shell]
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.tpx\shell\open]
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.tpx\shell\open\command]
-@="C:\\ais\\AKUZ.UserArm.exe tpx \"%1\""
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.tpx\shell\print]
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.tpx\shell\print\command]
-@="C:\\ais\\AKUZ.UserArm.exe tpx /p \"%1\""
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.tpx\shell\printto]
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.tpx\shell\printto\command]
-@="C:\\ais\\AKUZ.UserArm.exe tpx /p \"%1\" \"%2\""
 

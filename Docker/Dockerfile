@@ -18,11 +18,14 @@ RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula selec
     zenity \
     apt-utils \
     locales \
+    cups-pdf \
+    nano \
     ttf-mscorefonts-installer \
     && rm -rf /var/lib/apt/lists/*
 
 RUN localedef -i ru_RU -c -f UTF-8 -A /usr/share/locale/locale.alias ru_RU.UTF-8
 ENV LANG ru_RU.utf8
+RUN service cups start && lpadmin -p cups-pdf -v cups-pdf:/ -E -P /usr/share/ppd/cups-pdf/CUPS-PDF_noopt.ppd 
 
 RUN wget https://dl.winehq.org/wine-builds/winehq.key \
     && apt-key add winehq.key \
