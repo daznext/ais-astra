@@ -108,6 +108,8 @@ if ! docker volume ls -qf "name=aishome" | grep -q "aishome"; then
             docker_run_on_mac tar xvjf $AIS_ARC
         else
             docker_run winetricks -q dotnet20sp2
+            docker_run winetricks gdiplus
+            docker_run winetricks ie8
             docker_run wget $AIS_URL 
             docker_run tar xvjf $AIS_ARC
         fi
