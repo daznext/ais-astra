@@ -20,6 +20,7 @@ RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula selec
     locales \
     cups-pdf \
     nano \
+    libxm4 \
     libusb-0.1-4 \
     ttf-mscorefonts-installer \
     && rm -rf /var/lib/apt/lists/*
@@ -54,7 +55,7 @@ COPY libcapihelper10.so /usr/lib
 COPY libcapi20.dll.so /opt/wine-stable/lib/wine/
 COPY 1bc5db0e.000.zip /tmp
 
-RUN cd /tmp/cp && bash ./install.sh && cd /tmp && unzip 1bc5db0e.000.zip && \
+RUN cd /tmp/cp && bash ./install.sh && dpkg -i ./cprocsp-rdr-gui_4.0.9963-5_i386.deb && cd /tmp && unzip 1bc5db0e.000.zip && \
     cp -r 1bc5db0e.000 /var/opt/cprocsp/keys/wineuser/ && \
     mkdir -p /var/opt/cprocsp/keys/wineuser/ && chown -R wineuser:wineuser /var/opt/cprocsp/keys/wineuser && \
     rm -rf /tmp/cp
