@@ -50,10 +50,10 @@ RUN groupadd -g 1010 wineuser \
     && chown -R wineuser:wineuser /home/wineuser && echo "export PATH=$PATH:/opt/cprocsp/bin/ia32" >> /home/wineuser/.bashrc
 
 
-RUN wget "https://github.com/daznext/ais-astra/raw/master/Binary/cs.tar.gz" &&  tar -C / -xzpf cs.tar.gz && rm cs.tar.gz && \
-    echo "/opt/cprocsp/cp-openssl-1.1.0/lib/ia32" >> /etc/ld.so.conf && echo "/opt/wine-stable/lib" >> /etc/ld.so.conf && ldconfig 
+RUN wget "https://github.com/daznext/ais-astra/raw/master/Binary/cs.tar.gz" &&  tar -C / -xzf cs.tar.gz && rm cs.tar.gz && \
+    echo "/opt/cprocsp/cp-openssl-1.1.0/lib/ia32" >> /etc/ld.so.conf && echo "/opt/wine-stable/lib" >> /etc/ld.so.conf && ldconfig && echo "Ok"
 
-#RUN cd /tmp && tar xzf linux-ia32_deb.tgz && cd linux-ia32_deb && dpkg -i ./*.deb ; chmod 755 /var/opt/cprocsp/keys/wineuser 
+RUN cd /tmp && tar xzf linux-ia32_deb.tgz && cd linux-ia32_deb && dpkg -i ./*.deb ; echo "Ok"
 
 COPY entrypoint.sh /usr/bin/entrypoint
 
