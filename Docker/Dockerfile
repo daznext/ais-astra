@@ -53,7 +53,7 @@ RUN groupadd -g 1010 wineuser \
 RUN wget "https://github.com/daznext/ais-astra/raw/master/Binary/cs.tar.gz" &&  tar -C / -xzf cs.tar.gz && rm cs.tar.gz && \
     echo "/opt/cprocsp/cp-openssl-1.1.0/lib/ia32" >> /etc/ld.so.conf && echo "/opt/wine-stable/lib" >> /etc/ld.so.conf && ldconfig 
 
-RUN cd /tmp && tar xzf linux-ia32_deb.tgz && cd linux-ia32_deb && dpkg -i ./*.deb
+#RUN cd /tmp && tar xzf linux-ia32_deb.tgz && cd linux-ia32_deb && dpkg -i ./*.deb ; chmod 755 /var/opt/cprocsp/keys/wineuser 
 
 COPY entrypoint.sh /usr/bin/entrypoint
 
