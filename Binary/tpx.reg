@@ -5,6 +5,6 @@ Windows Registry Editor Version 5.00
 "Content Type"="text/plain"
 
 [HKEY_CLASSES_ROOT\TPXfile\Shell\Open\command]
-@="Z:\\home\\wineuser\\Debug\\AKUZ.UserArm.exe tpx \"%1\"" 
+@="Z:\\home\\wineuser\\ais\\AKUZ.UserArm.exe tpx \"%1\"" 
 
 

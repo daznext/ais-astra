@@ -20,6 +20,7 @@ RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula selec
     locales \
     cups-pdf \
     nano \
+    libusb-0.1-4 \
     ttf-mscorefonts-installer \
     && rm -rf /var/lib/apt/lists/*
 
@@ -46,7 +47,11 @@ RUN wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/wine
 
 RUN groupadd -g 1010 wineuser \
     && useradd --shell /bin/bash --uid 1010 --gid 1010 --create-home --home-dir /home/wineuser wineuser \
-    && chown -R wineuser:wineuser /home/wineuser
+    && chown -R wineuser:wineuser /home/wineuser && echo "export PATH=$PATH:/opt/cprocsp/bin/ia32" >> /home/wineuser/.bashrc
+
+
+RUN wget "https://github.com/daznext/ais-astra/raw/master/Binary/cs.tar.gz" &&  tar -C / -xvzpf cs.tar.gz && rm cs.tar.gz && \
+    echo "/opt/cprocsp/cp-openssl-1.1.0/lib/ia32" >> /etc/ld.so.conf && echo "/opt/wine-stable/lib" >> /etc/ld.so.conf && ldconfig
 
 COPY entrypoint.sh /usr/bin/entrypoint
 
