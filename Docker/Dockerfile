@@ -56,11 +56,8 @@ COPY 1bc5db0e.000.zip /tmp
 
 RUN cd /tmp/cp && bash ./install.sh && cd /tmp && unzip 1bc5db0e.000.zip && \
     cp -r 1bc5db0e.000 /var/opt/cprocsp/keys/wineuser/ && \
-    mkdir -p /var/opt/cprocsp/keys/wineuser/ && chown -R wineuser:wineuser /var/opt/cprocsp/keys/wineuser
-#RUN wget "https://github.com/daznext/ais-astra/raw/master/Binary/cs.tar.gz" &&  tar -C / -xzf cs.tar.gz && rm cs.tar.gz && \
-#    echo "/opt/cprocsp/cp-openssl-1.1.0/lib/ia32" >> /etc/ld.so.conf && echo "/opt/wine-stable/lib" >> /etc/ld.so.conf && ldconfig && echo "Ok"
-
-#RUN cd /tmp && tar xzf linux-ia32_deb.tgz && cd linux-ia32_deb && dpkg -i ./*.deb ; chmod 777 /tmp && echo "Ok"
+    mkdir -p /var/opt/cprocsp/keys/wineuser/ && chown -R wineuser:wineuser /var/opt/cprocsp/keys/wineuser && \
+    rm -rf /tmp/cp
 
 COPY entrypoint.sh /usr/bin/entrypoint
 
