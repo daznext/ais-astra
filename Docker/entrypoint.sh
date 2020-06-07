@@ -10,4 +10,6 @@ if [ -f /root/.Xauthority ]; then
     chown wineuser:wineuser /home/wineuser/.Xauthority
 fi
 
+gosu wineuser /opt/cprocsp/bin/ia32/csptestf -absorb -certs -autoprov
+
 exec gosu wineuser "$@"
